@@ -54,24 +54,24 @@
 .dark {
   color-scheme: dark;
 
-  --bg: #070a12;
-  --surface: #0d1220;
-  --surface-2: #121a2b;
-  --surface-3: #182136;
-  --surface-inset: #0a0f1b;
+  --bg: #080b14;
+  --surface: #101522;
+  --surface-2: #141b2b;
+  --surface-3: #1b2538;
+  --surface-inset: #0b101b;
 
-  --border: #1e2942;
-  --border-strong: #2c3a58;
+  --border: #24304a;
+  --border-strong: #354360;
 
-  --fg: #e8eefb;
-  --fg-muted: #96a3bd;
-  --fg-subtle: #6b7894;
+  --fg: #f0f4ff;
+  --fg-muted: #a5b1ca;
+  --fg-subtle: #74819d;
 
-  --accent: #34d0ff;
-  --accent-fg: #04121c;
-  --accent-soft: rgb(52 208 255 / 14%);
-  --accent-2: #a78bfa;
-  --accent-2-soft: rgb(167 139 250 / 14%);
+  --accent: #5fe1ff;
+  --accent-fg: #06141d;
+  --accent-soft: rgb(95 225 255 / 13%);
+  --accent-2: #b99bff;
+  --accent-2-soft: rgb(185 155 255 / 14%);
 
   --ok: #34d399;
   --ok-soft: rgb(52 211 153 / 14%);
@@ -201,11 +201,23 @@ body {
 }
 
 body {
-  background: var(--bg);
+  background:
+    radial-gradient(circle at 78% -12%, rgb(95 225 255 / 7%), transparent 29rem),
+    radial-gradient(circle at 20% 110%, rgb(185 155 255 / 5%), transparent 26rem),
+    var(--bg);
   color: var(--fg);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   overscroll-behavior: none;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  -webkit-tap-highlight-color: transparent;
 }
 
 ::selection {

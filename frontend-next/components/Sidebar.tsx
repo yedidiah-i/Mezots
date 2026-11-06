@@ -74,7 +74,7 @@ export function Sidebar({
     <div className="flex h-full min-h-0 flex-col">
       <header className="flex items-center gap-2 px-4 pt-4 pb-3">
         <div className="min-w-0 flex-1">
-          <h1 className="truncate text-fluid-lg font-semibold tracking-tight">
+          <h1 className="truncate text-fluid-lg font-semibold tracking-[-0.02em]">
             {section === "chat" && "School network"}
             {section === "live" && "Live studio"}
             {section === "reels" && "Reels"}
