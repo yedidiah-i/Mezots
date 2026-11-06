@@ -131,7 +131,7 @@ function MezotsShell() {
   }, [section, currentRoom]);
 
   return (
-    <div className="flex h-dvh w-full overflow-hidden bg-bg text-fg">
+    <div className="relative flex h-dvh w-full overflow-hidden bg-bg text-fg selection:bg-accent/20">
       <AppRail
         section={section}
         onSection={setSection}
@@ -142,7 +142,7 @@ function MezotsShell() {
       <div
         className={[
           "z-30 flex shrink-0 flex-col border-r border-line bg-surface-2",
-          compact ? "absolute inset-y-0 left-[68px]" : "relative w-[268px]",
+          compact ? "absolute inset-y-0 left-[72px]" : "relative w-[276px]",
           compact
             ? drawerOpen
               ? "translate-x-0 shadow-overlay"

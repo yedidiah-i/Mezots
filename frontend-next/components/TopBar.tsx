@@ -61,7 +61,7 @@ export function TopBar({
   const liveStream = room ? streams[room.id] : undefined;
 
   return (
-    <header className="flex h-14 shrink-0 items-center gap-3 border-b border-line bg-surface/70 px-3 backdrop-blur-xl sm:px-4">
+    <header className="flex h-16 shrink-0 items-center gap-3 border-b border-line bg-surface/65 px-4 backdrop-blur-xl sm:px-6">
       {compact && (
         <IconButton label="Open the sidebar" onClick={onOpenDrawer}>
           <span className="flex flex-col gap-[3px]">

@@ -56,7 +56,7 @@ export function AppRail({
   );
 
   return (
-    <nav className="z-40 flex w-[68px] shrink-0 flex-col items-center gap-1 border-r border-line bg-surface py-3">
+    <nav className="z-40 flex w-[72px] shrink-0 flex-col items-center gap-1 border-r border-line bg-surface/90 py-4 backdrop-blur-xl">
       <div
         className="mb-2 grid size-10 place-items-center rounded-xl bg-gradient-to-br from-accent to-accent-2 font-bold text-accent-fg shadow-soft"
         title="Mezots"
