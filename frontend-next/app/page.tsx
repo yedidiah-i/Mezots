@@ -1,4 +1,4 @@
-import { MezotsApp } from "@/components/MezotsApp";
+import MezotsApp from "@/components/MezotsApp";
 
 /**
  * The Mezots interface.
