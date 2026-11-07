@@ -19,12 +19,16 @@ pub mod config;
 pub mod crypto;
 pub mod discovery;
 pub mod error;
+pub mod ledger;
 pub mod peer;
 pub mod protocol;
 pub mod reliability;
+pub mod reels;
+pub mod rooms;
 pub mod transport;
 
 pub use config::NodeConfig;
 pub use error::{Error, Result};
+pub use ledger::{Ledger, LedgerBlock, LedgerKind};
 pub use peer::{DiscoverySource, PeerEvent, PeerRecord, PeerState, PeerSummary};
 pub use reliability::manager::PeerManager;

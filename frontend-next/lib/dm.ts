@@ -75,11 +75,12 @@ export function publishKey(
  */
 export function ensureConversation(
   peerId: string,
+  room: string,
   identity: Identity,
   send: Sender,
 ): void {
   if (hasConversationKey(peerId)) return;
-  publishKey(peerId, roomFor(peerId), identity, send);
+  publishKey(peerId, room, identity, send);
 }
 
 /**
@@ -108,8 +109,7 @@ export async function handleIncomingAttachment(
     };
     await handleKeyPayload(peerId, payload, identity.agreement);
     // Answer with our own key so the other side can derive too.
-    publishKey(peerId, room, identity, send);
-  } catch (error) {
+    publishKey(peerId, room, identity, send);  } catch (error) {
     console.warn("[mezots] could not handle a key exchange", error);
   }
   return true;

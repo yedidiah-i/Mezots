@@ -82,20 +82,20 @@ export function AppRail({
             aria-label={item.label}
             aria-current={active ? "page" : undefined}
             className={[
-              "group relative grid size-11 place-items-center rounded-xl transition-colors duration-150",
+              "group relative grid size-11 place-items-center rounded-xl transition-all duration-200",
               active
-                ? "bg-accent-soft text-accent"
-                : "text-fg-subtle hover:bg-surface-3 hover:text-fg",
+                ? "bg-accent-soft text-accent shadow-soft"
+                : "text-fg-subtle hover:scale-[1.06] hover:bg-surface-3 hover:text-fg",
             ].join(" ")}
           >
-            <Icon size={20} />
+            <Icon size={20} strokeWidth={active ? 2 : 1.7} />
             {badge !== null && (
-              <span className="absolute -top-0.5 -right-0.5 grid min-w-4.5 place-items-center rounded-full bg-accent px-1 text-[10px] font-bold text-accent-fg">
+              <span className="absolute -top-0.5 -right-0.5 grid min-w-4.5 place-items-center rounded-full bg-accent px-1 text-[10px] font-bold text-accent-fg shadow-soft">
                 {badge}
               </span>
             )}
             {active && (
-              <span className="absolute top-1/2 -left-[13px] h-6 w-1 -translate-y-1/2 rounded-r-full bg-accent" />
+              <span className="absolute top-1/2 -left-[13px] h-6 w-[3px] -translate-y-1/2 rounded-r-full bg-accent shadow-[0_0_12px_var(--accent)]" />
             )}
           </button>
         );

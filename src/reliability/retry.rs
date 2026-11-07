@@ -131,7 +131,7 @@ mod tests {
     #[test]
     fn frames_are_acknowledged_once() {
         let mut queue = RetryQueue::default();
-        queue.track(1, Frame::ChatText { text: "a".into() });
+        queue.track(1, Frame::ChatText { room: "general".into(), text: "a".into() });
         assert!(queue.contains(1));
         assert!(queue.acknowledge(1));
         assert!(!queue.acknowledge(1));
@@ -141,8 +141,8 @@ mod tests {
     #[test]
     fn unacknowledged_frames_survive_a_disconnect() {
         let mut queue = RetryQueue::default();
-        queue.track(1, Frame::ChatText { text: "a".into() });
-        queue.track(2, Frame::ChatText { text: "b".into() });
+        queue.track(1, Frame::ChatText { room: "general".into(), text: "a".into() });
+        queue.track(2, Frame::ChatText { room: "general".into(), text: "b".into() });
 
         // The socket dies: the queue is still holding the frames.
         let pending = queue.take_all();
@@ -154,9 +154,9 @@ mod tests {
     #[test]
     fn the_queue_is_bounded() {
         let mut queue = RetryQueue::new(2, Duration::from_secs(60));
-        queue.track(1, Frame::ChatText { text: "a".into() });
-        queue.track(2, Frame::ChatText { text: "b".into() });
-        queue.track(3, Frame::ChatText { text: "c".into() });
+        queue.track(1, Frame::ChatText { room: "general".into(), text: "a".into() });
+        queue.track(2, Frame::ChatText { room: "general".into(), text: "b".into() });
+        queue.track(3, Frame::ChatText { room: "general".into(), text: "c".into() });
         assert_eq!(queue.len(), 2);
         // The oldest frame was evicted.
         assert!(!queue.contains(1));
@@ -166,7 +166,7 @@ mod tests {
     #[test]
     fn expired_frames_are_dropped() {
         let mut queue = RetryQueue::new(10, Duration::from_millis(1));
-        queue.track(1, Frame::ChatText { text: "a".into() });
+        queue.track(1, Frame::ChatText { room: "general".into(), text: "a".into() });
         std::thread::sleep(Duration::from_millis(5));
         assert_eq!(queue.purge_expired(), 1);
         assert!(queue.is_empty());

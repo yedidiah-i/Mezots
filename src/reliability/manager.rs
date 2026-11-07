@@ -109,6 +109,7 @@ enum Command {
         room: String,
         mime: String,
         payload: Vec<u8>,
+        kind: LedgerKind,
         reply: oneshot::Sender<Result<LedgerBlock>>,
     },
     /// Announce a live stream.
@@ -553,12 +554,25 @@ impl PeerManager {
         mime: impl Into<String>,
         payload: Vec<u8>,
     ) -> Result<LedgerBlock> {
+        self.send_room_binary_kind(room, mime, payload, LedgerKind::Binary)
+            .await
+    }
+
+    /// Send an attachment into a room and commit it as a given kind.
+    pub async fn send_room_binary_kind(
+        &self,
+        room: &str,
+        mime: impl Into<String>,
+        payload: Vec<u8>,
+        kind: LedgerKind,
+    ) -> Result<LedgerBlock> {
         let (reply, rx) = oneshot::channel();
         self.commands
             .send(Command::SendRoomBinary {
                 room: room.to_string(),
                 mime: mime.into(),
                 payload,
+                kind,
                 reply,
             })
             .await
@@ -720,8 +734,9 @@ impl PeerGateway for PeerManager {
         room: &'a str,
         mime: String,
         payload: Vec<u8>,
+        kind: LedgerKind,
     ) -> BoxFuture<'a, Result<LedgerBlock>> {
-        Box::pin(async move { self.send_room_binary(room, mime, payload).await })
+        Box::pin(async move { self.send_room_binary_kind(room, mime, payload, kind).await })
     }
 
     fn start_stream<'a>(
@@ -895,9 +910,10 @@ impl Actor {
                 room,
                 mime,
                 payload,
+                kind,
                 reply,
             } => {
-                let result = self.publish_room_binary(&room, &mime, &payload);
+                let result = self.publish_room_binary(&room, &mime, &payload, kind);
                 let _ = reply.send(result);
             }
             Command::StartStream {
@@ -1741,6 +1757,7 @@ impl Actor {
         room: &str,
         mime: &str,
         payload: &[u8],
+        kind: LedgerKind,
     ) -> Result<LedgerBlock> {
         let canonical = self.canonical_room(room);
         let frame = Frame::ChatBinary {
@@ -1753,7 +1770,7 @@ impl Actor {
         // The chain commits to the hash of the attachment and its type.
         let mut committed = mime.as_bytes().to_vec();
         committed.extend_from_slice(payload);
-        Ok(self.commit(&canonical, LedgerKind::Binary, &committed))
+        Ok(self.commit(&canonical, kind, &committed))
     }
 
     /* ------------------------------------------------------------------ */
@@ -1788,7 +1805,9 @@ impl Actor {
         let frame = Frame::LedgerBlock { block: block.clone() };
         let _ = self.send_to_room(room, frame, Priority::Control);
 
-        let _ = self.events.send(PeerEvent::LedgerBlock { block });
+        let _ = self.events.send(PeerEvent::LedgerBlock {
+            block: block.clone(),
+        });
         block
     }
 
@@ -1838,6 +1857,7 @@ impl Actor {
     /// A peer that was found over mDNS or the multicast beacon is on the
     /// same physical network, so its traffic costs the school nothing.
     fn count_bytes(&mut self, peer_id: &str, bytes: usize) {
+        let on_lan = self
             .peers
             .get(peer_id)
             .map(|entry| {
@@ -1853,6 +1873,15 @@ impl Actor {
         } else {
             self.bytes_internet += bytes as u64;
         }
+    }
+
+    /// The display name of a peer.
+    fn author_of(&self, peer_id: &str) -> String {
+        self.peers
+            .get(peer_id)
+            .map(|entry| entry.record.display_name.clone())
+            .filter(|name| !name.is_empty())
+            .unwrap_or_else(|| peer_id.to_string())
     }
 }
 

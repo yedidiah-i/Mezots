@@ -58,6 +58,11 @@ pub struct NodeConfig {
     /// stable for the lifetime of this node - the warning is still reported
     /// either way.
     pub pin_peer_identity: bool,
+    /// Where the node keeps the clips that people publish.
+    ///
+    /// The clips are served straight off the disk, so a school can point
+    /// this at a network share if it wants to keep them somewhere else.
+    pub data_dir: std::path::PathBuf,
 }
 
 impl Default for NodeConfig {
@@ -82,6 +87,7 @@ impl Default for NodeConfig {
             max_frame_bytes: 16 * 1024 * 1024,
             handshake_timeout: Duration::from_secs(10),
             pin_peer_identity: false,
+            data_dir: default_data_dir(),
         }
     }
 }
@@ -114,6 +120,41 @@ pub fn default_node_id() -> String {
     let mut bytes = [0u8; 4];
     rand::rng().fill_bytes(&mut bytes);
     format!("node-{}", hex(&bytes))
+}
+
+/// Where the node keeps its data by default.
+///
+/// The directory sits next to the executable on a portable install and in
+/// the user's data folder everywhere else.
+pub fn default_data_dir() -> std::path::PathBuf {
+    if let Ok(exe) = std::env::current_exe() {
+        if let Some(parent) = exe.parent() {
+            let candidate = parent.join("data");
+            if candidate.is_dir() || parent.join("Cargo.toml").is_file() {
+                return candidate;
+            }
+        }
+    }
+
+    if let Ok(dir) = std::env::var("MEZOTS_DATA_DIR") {
+        return std::path::PathBuf::from(dir);
+    }
+
+    #[cfg(windows)]
+    {
+        if let Ok(local) = std::env::var("LOCALAPPDATA") {
+            return std::path::PathBuf::from(local).join("mezots");
+        }
+    }
+
+    #[cfg(not(windows))]
+    {
+        if let Ok(home) = std::env::var("HOME") {
+            return std::path::PathBuf::from(home).join(".local/share/mezots");
+        }
+    }
+
+    std::path::PathBuf::from("data")
 }
 
 /// Lowercase hex encoding helper.

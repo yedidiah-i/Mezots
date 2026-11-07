@@ -29,8 +29,10 @@ use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 
-use crate::config::hex;
 use crate::crypto::keys::{NodeKeys, KEY_LEN, SIGNATURE_LEN};
+
+/// Hex encoding, re-exported so the chain helpers stand on their own.
+pub use crate::config::hex;
 
 /// The hash of the block before the first one.
 pub const GENESIS_HASH: &str =
@@ -380,7 +382,7 @@ pub fn hex_decode(value: &str) -> Option<Vec<u8>> {
 mod tests {
     use super::*;
 
-    fn keys() -> NodeKeys {
+    fn fresh_keys() -> NodeKeys {
         NodeKeys::generate()
     }
 
@@ -394,7 +396,7 @@ mod tests {
 
     #[test]
     fn blocks_link_and_verify() {
-        let keys = keys();
+        let keys = fresh_keys();
         let mut ledger = Ledger::new();
         ledger.append(&keys, "node-a", "A", "general", LedgerKind::Message, b"hello", 1);
         ledger.append(&keys, "node-a", "A", "general", LedgerKind::Message, b"world", 2);
@@ -406,7 +408,7 @@ mod tests {
 
     #[test]
     fn editing_a_block_breaks_the_chain() {
-        let keys = keys();
+        let keys = fresh_keys();
         let mut ledger = Ledger::new();
         ledger.append(&keys, "node-a", "A", "general", LedgerKind::Message, b"hello", 1);
         ledger.append(&keys, "node-a", "A", "general", LedgerKind::Message, b"world", 2);
@@ -426,7 +428,7 @@ mod tests {
 
     #[test]
     fn signatures_check_out() {
-        let keys = keys();
+        let keys = fresh_keys();
         let mut ledger = Ledger::new();
         let block = ledger.append(
             &keys,
@@ -445,8 +447,8 @@ mod tests {
 
     #[test]
     fn a_block_signed_by_someone_else_does_not_check_out() {
-        let keys = keys();
-        let other = keys();
+        let keys = fresh_keys();
+        let other = fresh_keys();
         let mut ledger = Ledger::new();
         let mut block = ledger.append(
             &keys,
@@ -463,8 +465,8 @@ mod tests {
 
     #[test]
     fn a_block_from_a_peer_is_adopted() {
-        let keys = keys();
-        let peer = keys();
+        let keys = fresh_keys();
+        let peer = fresh_keys();
         let mut source = Ledger::new();
         let block = source.append(
             &peer,
@@ -484,8 +486,8 @@ mod tests {
 
     #[test]
     fn a_block_whose_parent_is_missing_waits() {
-        let keys = keys();
-        let peer = keys();
+        let keys = fresh_keys();
+        let peer = fresh_keys();
         let mut source = Ledger::new();
         let first = source.append(
             &peer,
@@ -517,7 +519,7 @@ mod tests {
     #[test]
     fn the_canonical_header_is_unambiguous() {
         let mut ledger = Ledger::new();
-        let keys = keys();
+        let keys = fresh_keys();
         let a = ledger.append(&keys, "n", "N", "ab", LedgerKind::Message, b"x", 1);
         let b = ledger.append(&keys, "n", "N", "a", LedgerKind::Message, b"x", 1);
         assert_ne!(a.canonical_header(), b.canonical_header());

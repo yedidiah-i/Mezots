@@ -121,7 +121,7 @@ async fn two_nodes_connect_and_exchange_text() {
         .expect("send failed");
 
     let received = next_event(&mut events_b, Duration::from_secs(10), |event| {
-        matches!(event, PeerEvent::Message { peer_id, text }
+        matches!(event, PeerEvent::Message { peer_id, text, .. }
             if peer_id == "node-a" && text == "hello from A")
     })
     .await;
@@ -133,7 +133,7 @@ async fn two_nodes_connect_and_exchange_text() {
         .await
         .expect("send failed");
     let received = next_event(&mut events_a, Duration::from_secs(10), |event| {
-        matches!(event, PeerEvent::Message { peer_id, text }
+        matches!(event, PeerEvent::Message { peer_id, text, .. }
             if peer_id == "node-b" && text == "hello from B")
     })
     .await;
@@ -281,7 +281,7 @@ async fn the_wire_carries_ciphertext_not_plaintext() {
         // But the receiver can still open it.
         let plaintext = outcome.rx.decrypt(&raw).expect("decryption failed");
         let envelope = decode_envelope(&plaintext).expect("decoding failed");
-        if let Frame::ChatText { text } = &envelope.frame {
+        if let Frame::ChatText { text, .. } = &envelope.frame {
             if text == marker {
                 found = true;
                 break;
@@ -342,9 +342,13 @@ async fn a_tampered_frame_is_rejected() {
         .expect("handshake failed");
 
     // Build a valid frame, then flip a bit in the ciphertext.
-    let envelope = Envelope::next(1, Frame::ChatText {
-        text: "injected".into(),
-    });
+    let envelope = Envelope::next(
+        1,
+        Frame::ChatText {
+            room: "general".into(),
+            text: "injected".into(),
+        },
+    );
     let plaintext = encode_envelope(&envelope).expect("encoding failed");
     let mut ciphertext = outcome.tx.encrypt(&plaintext).expect("encryption failed");
     ciphertext[0] ^= 0x01;

@@ -156,7 +156,22 @@ async fn run(
     let ws = if config.enable_websocket {
         let gateway: Arc<dyn mezots::transport::websocket::PeerGateway> =
             Arc::new(manager.clone());
-        match WebSocketServer::start(config.websocket_port, gateway, manager.subscribe()).await {
+        let reels = match mezots::reels::ReelStore::open(config.data_dir.join("reels")) {
+            Ok(store) => store,
+            Err(e) => {
+                warn!(error = %e, "could not open the reels directory");
+                mezots::reels::ReelStore::open(std::env::temp_dir().join("mezots-reels"))
+                    .expect("a temporary reels directory should be usable")
+            }
+        };
+        match WebSocketServer::start(
+            config.websocket_port,
+            gateway,
+            manager.subscribe(),
+            reels,
+        )
+        .await
+        {
             Ok(server) => {
                 info!(
                     url = %format!("ws://127.0.0.1:{}/ws", server.local_addr().port()),
@@ -233,29 +248,73 @@ async fn run(
                 Ok(PeerEvent::Disconnected { peer_id, reason }) => {
                     println!("  [disconnect] peer '{peer_id}': {reason}");
                 }
-                Ok(PeerEvent::Message { peer_id, text }) => {
-                    println!("  [message]   {peer_id}: {text}");
+                Ok(PeerEvent::Message {
+                    peer_id,
+                    room,
+                    text,
+                    ..
+                }) => {
+                    println!("  [message]   {peer_id} in {room}: {text}");
                 }
                 Ok(PeerEvent::Binary {
                     peer_id,
+                    room,
                     mime,
                     payload,
+                    ..
                 }) => {
                     println!(
-                        "  [binary]    {peer_id}: {mime} ({} bytes)",
+                        "  [binary]    {peer_id} in {room}: {mime} ({} bytes)",
                         payload.len()
                     );
                 }
                 Ok(PeerEvent::StreamChunk {
                     peer_id,
+                    room,
                     stream_id,
                     seq,
                     payload,
                 }) => {
                     println!(
-                        "  [stream]    {peer_id}: stream {stream_id} chunk {seq} ({} bytes)",
+                        "  [stream]    {peer_id} in {room}: stream {stream_id} chunk {seq} ({} bytes)",
                         payload.len()
                     );
+                }
+                Ok(PeerEvent::StreamMeta {
+                    peer_id,
+                    room,
+                    stream_id,
+                    title,
+                    ..
+                }) => {
+                    println!(
+                        "  [live]      {peer_id} started '{title}' in {room} (stream {stream_id})"
+                    );
+                }
+                Ok(PeerEvent::LedgerBlock { block }) => {
+                    println!(
+                        "  [chain]     block #{} by {} in {} ({})",
+                        block.index,
+                        block.actor_name,
+                        block.room,
+                        block.kind.as_str()
+                    );
+                }
+                Ok(PeerEvent::StreamEnd {
+                    peer_id,
+                    room,
+                    stream_id,
+                }) => {
+                    println!(
+                        "  [live]      {peer_id} ended the stream {stream_id} in {room}"
+                    );
+                }
+                Ok(PeerEvent::ChainState {
+                    peer_id,
+                    head,
+                    height,
+                }) => {
+                    println!("  [chain]     {peer_id} is at height {height} ({head})");
                 }
                 Ok(PeerEvent::Error { message }) => {
                     println!("  [error]     {message}");

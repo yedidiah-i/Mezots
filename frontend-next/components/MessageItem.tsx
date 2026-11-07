@@ -23,7 +23,7 @@ import {
 } from "./icons";
 import { RichText } from "./RichText";
 import type { ChatMessage } from "@/lib/store";
-import { formatTime, relativeTime } from "@/lib/format";
+import { formatTime, relativeTime, colourFor } from "@/lib/format";
 import { toggleReaction } from "@/lib/store";
 
 /** The reactions offered by the quick picker. */
@@ -49,7 +49,7 @@ export function MessageItem({
 
   return (
     <article
-      className={`group relative flex gap-3 px-3 transition-colors hover:bg-surface-2/60 sm:px-4 ${
+      className={`group message-enter relative flex gap-3 rounded-lg px-3 transition-colors hover:bg-surface-2/60 sm:px-4 ${
         compact ? "py-0.5" : "pt-3 pb-1"
       }`}
     >
@@ -66,7 +66,10 @@ export function MessageItem({
       <div className="min-w-0 flex-1">
         {!compact && (
           <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-            <span className="text-fluid-sm font-semibold text-fg">
+            <span
+              className="text-fluid-sm font-semibold text-fg"
+              style={{ color: `hsl(${colourFor(message.peerId)} 62% 62%)` }}
+            >
               {isMine ? "You" : message.author}
             </span>
             <time
@@ -77,19 +80,19 @@ export function MessageItem({
             </time>
             {message.encrypted && (
               <span
-                className="inline-flex items-center gap-0.5 text-[10px] text-ok"
+                className="inline-flex items-center gap-0.5 rounded-full bg-ok-soft px-1.5 py-px text-[10px] text-ok"
                 title="Encrypted in the browser before it left this device"
               >
-                <LockIcon size={10} />
+                <LockIcon size={9} />
                 encrypted
               </span>
             )}
             {message.blockHash && (
               <span
-                className="inline-flex items-center gap-0.5 font-mono text-[10px] text-fg-subtle"
+                className="inline-flex items-center gap-0.5 rounded-full bg-surface-3 px-1.5 py-px font-mono text-[10px] text-fg-subtle"
                 title={`Committed to the chain at block ${message.height ?? "?"}`}
               >
-                <BlocksIcon size={10} />
+                <BlocksIcon size={9} />
                 #{message.height ?? "?"}
               </span>
             )}
@@ -102,7 +105,7 @@ export function MessageItem({
           </p>
 
           {/* Hover actions. */}
-          <div className="absolute -top-2 right-3 hidden items-center gap-0.5 rounded-lg border border-line bg-surface px-0.5 py-0.5 shadow-soft group-hover:flex">
+          <div className="absolute -top-2.5 right-3 hidden items-center gap-0.5 rounded-lg border border-line bg-surface/90 px-0.5 py-0.5 shadow-float backdrop-blur-xl group-hover:flex animate-pop">
             <div className="relative">
               <IconButton
                 label="Add a reaction"

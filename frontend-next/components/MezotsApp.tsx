@@ -131,7 +131,7 @@ function MezotsShell() {
   }, [section, currentRoom]);
 
   return (
-    <div className="relative flex h-dvh w-full overflow-hidden bg-bg text-fg selection:bg-accent/20">
+    <div className="relative flex h-dvh w-full overflow-hidden text-fg selection:bg-accent/20">
       <AppRail
         section={section}
         onSection={setSection}
@@ -141,14 +141,14 @@ function MezotsShell() {
       {/* The sidebar. On a phone it slides over the main view. */}
       <div
         className={[
-          "z-30 flex shrink-0 flex-col border-r border-line bg-surface-2",
+          "z-30 flex shrink-0 flex-col border-r border-line bg-surface-2/70 backdrop-blur-2xl",
           compact ? "absolute inset-y-0 left-[72px]" : "relative w-[276px]",
           compact
             ? drawerOpen
               ? "translate-x-0 shadow-overlay"
               : "-translate-x-full"
             : "",
-          "transition-transform duration-200 ease-out",
+          "transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
         ].join(" ")}
       >
         <Sidebar
@@ -163,12 +163,12 @@ function MezotsShell() {
         <button
           type="button"
           aria-label="Close the sidebar"
-          className="absolute inset-0 z-20 bg-black/45"
+          className="absolute inset-0 z-20 cursor-default bg-black/50 backdrop-blur-[2px]"
           onClick={() => setDrawerOpen(false)}
         />
       )}
 
-      <main className="relative flex min-w-0 flex-1 flex-col bg-bg">
+      <main className="relative z-10 flex min-w-0 flex-1 flex-col bg-bg/55 backdrop-blur-xl">
         <TopBar
           section={section}
           room={currentRoom}
@@ -182,7 +182,7 @@ function MezotsShell() {
 
       {/* The network panel, docked on wide screens and a sheet otherwise. */}
       {!compact && (
-        <aside className="hidden w-[320px] shrink-0 overflow-y-auto border-l border-line bg-surface-2 xl:block">
+        <aside className="hidden w-[320px] shrink-0 overflow-y-auto border-l border-line bg-surface-2/70 backdrop-blur-2xl xl:block">
           <NetworkPanel />
         </aside>
       )}

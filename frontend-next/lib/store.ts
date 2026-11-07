@@ -253,9 +253,36 @@ function mergeMessage(
   return [...current, message];
 }
 
-/** The room id used for a direct conversation with a peer. */
-export function directRoom(peerId: string): string {
-  return `dm:${peerId}`;
+/**
+ * The room id used for a direct conversation with a peer.
+ *
+ * The node names a private conversation after both nodes, sorted, so that
+ * the two sides and every browser attached to them agree on one name.
+ */
+export function directRoom(peerId: string, nodeId?: string | null): string {
+  if (!nodeId) return `dm:${peerId}`;
+  const pair = [nodeId, peerId].sort();
+  return `dm:${pair[0]}:${pair[1]}`;
+}
+
+/**
+ * The peer a direct room belongs to.
+ *
+ * Returns `null` when the room is not a private conversation or when the
+ * room names two peers and we are neither of them.
+ */
+export function peerFromRoom(
+  room: string,
+  nodeId?: string | null,
+): string | null {
+  if (!room.startsWith("dm:")) return null;
+  const parts = room.slice(3).split(":").filter(Boolean);
+  if (parts.length === 1) return parts[0];
+  if (parts.length === 2) {
+    if (!nodeId) return parts[0];
+    return parts.find((part) => part !== nodeId) ?? null;
+  }
+  return null;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -499,10 +526,11 @@ export function setActiveRoom(room: string): void {
   sendCommand({ type: "join", room });
 
   // Opening a direct conversation starts the key exchange.
-  if (room.startsWith("dm:")) {
+  const peerId = peerFromRoom(room, store.getState().node?.nodeId);
+  if (peerId) {
     const identity = store.getState().identity;
     if (identity) {
-      ensureConversation(room.slice(3), identity, (command) => sendCommand(command));
+      ensureConversation(peerId, identity, (command) => sendCommand(command));
     }
   }
 }
@@ -750,7 +778,7 @@ export function selectRooms(state: AppState): RoomState[] {
   }
 
   for (const peer of state.peers) {
-    const id = directRoom(peer.peerId);
+    const id = directRoom(peer.peerId, state.node?.nodeId);
     if (known.has(id)) {
       result.push(known.get(id)!);
     } else {

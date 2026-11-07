@@ -57,14 +57,14 @@ mod tests {
     fn frame_roundtrip() {
         let frames = vec![
             Frame::Ping { nonce: 42, sent_ms: 1234 },
-            Frame::ChatText {
+            Frame::ChatText { room: "general".into(),
                 text: "hello µnïcødé".into(),
             },
-            Frame::ChatBinary {
+            Frame::ChatBinary { room: "general".into(),
                 mime: "image/png".into(),
                 payload: vec![0, 1, 2, 255],
             },
-            Frame::StreamChunk {
+            Frame::StreamChunk { room: "general".into(),
                 stream_id: 7,
                 seq: 99,
                 payload: vec![9; 128],
@@ -83,14 +83,14 @@ mod tests {
 
     #[test]
     fn envelope_roundtrip() {
-        let envelope = Envelope::next(17, Frame::ChatText { text: "yo".into() });
+        let envelope = Envelope::next(17, Frame::ChatText { room: "general".into(), text: "yo".into() });
         let bytes = encode_envelope(&envelope).unwrap();
         assert_eq!(decode_envelope(&bytes).unwrap(), envelope);
     }
 
     #[test]
     fn corrupt_bytes_are_rejected() {
-        let mut bytes = encode_frame(&Frame::ChatText { text: "x".into() }).unwrap();
+        let mut bytes = encode_frame(&Frame::ChatText { room: "general".into(), text: "x".into() }).unwrap();
         // Layout: [variant tag][varint length][payload]. Claiming a payload
         // that is longer than the buffer must fail the decode.
         assert!(bytes.len() > 1, "unexpected encoding: {bytes:?}");
@@ -100,7 +100,7 @@ mod tests {
 
     #[test]
     fn truncated_bytes_are_rejected() {
-        let bytes = encode_frame(&Frame::ChatText { text: "hello".into() }).unwrap();
+        let bytes = encode_frame(&Frame::ChatText { room: "general".into(), text: "hello".into() }).unwrap();
         assert!(decode_frame(&bytes[..bytes.len() - 2]).is_err());
     }
 

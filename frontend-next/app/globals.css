@@ -11,81 +11,98 @@
   color-scheme: light;
 
   /* Surfaces, from furthest back to closest to the reader. */
-  --bg: #f4f6fb;
+  --bg: #eef1f8;
+  --bg-deep: #e4e9f4;
   --surface: #ffffff;
   --surface-2: #f8fafc;
   --surface-3: #eef2f8;
-  --surface-inset: #e6ebf4;
+  --surface-inset: #e7ecf5;
 
   /* Lines. */
-  --border: #dbe2ee;
-  --border-strong: #c3ccdd;
+  --border: #dde4f0;
+  --border-strong: #c0cadd;
+  --border-glow: rgb(10 124 255 / 28%);
 
   /* Type. */
-  --fg: #0d1424;
-  --fg-muted: #55617a;
-  --fg-subtle: #7d879c;
+  --fg: #0b1220;
+  --fg-muted: #4e5a73;
+  --fg-subtle: #838ea4;
 
   /* Signal colours. */
-  --accent: #0a7cff;
+  --accent: #0a6cff;
   --accent-fg: #ffffff;
-  --accent-soft: rgb(10 124 255 / 12%);
-  --accent-2: #7b3ff2;
-  --accent-2-soft: rgb(123 63 242 / 12%);
+  --accent-soft: rgb(10 108 255 / 11%);
+  --accent-2: #7038e8;
+  --accent-2-soft: rgb(112 56 232 / 11%);
+  --accent-3: #00b8a9;
 
   /* Semantic. */
-  --ok: #0f9d58;
-  --ok-soft: rgb(15 157 88 / 14%);
-  --warn: #b7791f;
-  --warn-soft: rgb(183 121 31 / 16%);
-  --danger: #d92d20;
-  --danger-soft: rgb(217 45 32 / 12%);
+  --ok: #07945a;
+  --ok-soft: rgb(7 148 90 / 13%);
+  --warn: #b06d10;
+  --warn-soft: rgb(176 109 16 / 15%);
+  --danger: #dc2626;
+  --danger-soft: rgb(220 38 38 / 11%);
 
   /* Tinted surfaces used by callouts. */
-  --code-bg: #0d1424;
+  --code-bg: #0b1220;
   --code-fg: #e6edf7;
 
-  /* Shadows. */
-  --shadow-sm: 0 1px 2px rgb(13 20 36 / 6%);
-  --shadow-md: 0 6px 20px -6px rgb(13 20 36 / 14%);
-  --shadow-lg: 0 24px 60px -20px rgb(13 20 36 / 28%);
+  /* Shadows: layered, coloured, and soft. */
+  --shadow-sm: 0 1px 2px rgb(11 18 32 / 6%), 0 1px 1px rgb(11 18 32 / 4%);
+  --shadow-md: 0 4px 12px -2px rgb(11 18 32 / 10%), 0 12px 32px -12px rgb(11 18 32 / 14%);
+  --shadow-lg: 0 8px 24px -6px rgb(11 18 32 / 14%), 0 32px 64px -24px rgb(11 18 32 / 26%);
+  --shadow-accent: 0 0 0 1px var(--border-glow), 0 8px 28px -10px rgb(10 108 255 / 45%);
+
+  /* The aurora behind everything. */
+  --aurora-1: rgb(10 108 255 / 16%);
+  --aurora-2: rgb(112 56 232 / 14%);
+  --aurora-3: rgb(0 184 169 / 10%);
 }
 
 .dark {
   color-scheme: dark;
 
-  --bg: #080b14;
-  --surface: #101522;
-  --surface-2: #141b2b;
-  --surface-3: #1b2538;
-  --surface-inset: #0b101b;
+  --bg: #06080f;
+  --bg-deep: #03050a;
+  --surface: #0c111d;
+  --surface-2: #111726;
+  --surface-3: #171e30;
+  --surface-inset: #080c16;
 
-  --border: #24304a;
-  --border-strong: #354360;
+  --border: #1c2438;
+  --border-strong: #2b3550;
+  --border-glow: rgb(52 208 255 / 35%);
 
-  --fg: #f0f4ff;
-  --fg-muted: #a5b1ca;
-  --fg-subtle: #74819d;
+  --fg: #eaf0fb;
+  --fg-muted: #94a1ba;
+  --fg-subtle: #64718c;
 
-  --accent: #5fe1ff;
-  --accent-fg: #06141d;
-  --accent-soft: rgb(95 225 255 / 13%);
-  --accent-2: #b99bff;
-  --accent-2-soft: rgb(185 155 255 / 14%);
+  --accent: #3ad1ff;
+  --accent-fg: #04121c;
+  --accent-soft: rgb(58 209 255 / 13%);
+  --accent-2: #a78bfa;
+  --accent-2-soft: rgb(167 139 250 / 13%);
+  --accent-3: #2dd4bf;
 
   --ok: #34d399;
-  --ok-soft: rgb(52 211 153 / 14%);
+  --ok-soft: rgb(52 211 153 / 13%);
   --warn: #fbbf24;
-  --warn-soft: rgb(251 191 36 / 16%);
+  --warn-soft: rgb(251 191 36 / 15%);
   --danger: #f87171;
-  --danger-soft: rgb(248 113 113 / 14%);
+  --danger-soft: rgb(248 113 113 / 13%);
 
-  --code-bg: #060911;
+  --code-bg: #04070e;
   --code-fg: #dbe6f7;
 
-  --shadow-sm: 0 1px 2px rgb(0 0 0 / 40%);
-  --shadow-md: 0 8px 24px -8px rgb(0 0 0 / 60%);
-  --shadow-lg: 0 28px 70px -24px rgb(0 0 0 / 80%);
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 50%);
+  --shadow-md: 0 6px 20px -4px rgb(0 0 0 / 55%), 0 16px 40px -16px rgb(0 0 0 / 60%);
+  --shadow-lg: 0 10px 30px -8px rgb(0 0 0 / 60%), 0 40px 80px -28px rgb(0 0 0 / 85%);
+  --shadow-accent: 0 0 0 1px var(--border-glow), 0 10px 34px -12px rgb(58 209 255 / 40%);
+
+  --aurora-1: rgb(58 209 255 / 13%);
+  --aurora-2: rgb(167 139 250 / 12%);
+  --aurora-3: rgb(45 212 191 / 8%);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -94,6 +111,7 @@
 
 @theme inline {
   --color-bg: var(--bg);
+  --color-bg-deep: var(--bg-deep);
   --color-surface: var(--surface);
   --color-surface-2: var(--surface-2);
   --color-surface-3: var(--surface-3);
@@ -108,6 +126,7 @@
   --color-accent-soft: var(--accent-soft);
   --color-accent-2: var(--accent-2);
   --color-accent-2-soft: var(--accent-2-soft);
+  --color-accent-3: var(--accent-3);
   --color-ok: var(--ok);
   --color-ok-soft: var(--ok-soft);
   --color-warn: var(--warn);
@@ -129,23 +148,26 @@
   --shadow-soft: var(--shadow-sm);
   --shadow-float: var(--shadow-md);
   --shadow-overlay: var(--shadow-lg);
+  --shadow-accent: var(--shadow-accent);
 
   --animate-pulse-ring: pulse-ring 2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  --animate-fade-in: fade-in 0.18s ease-out;
-  --animate-rise: rise 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
-  --animate-shimmer: shimmer 1.6s linear infinite;
+  --animate-fade-in: fade-in 0.2s ease-out;
+  --animate-rise: rise 0.26s cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-slide-in: slide-in 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-shimmer: shimmer 1.8s linear infinite;
   --animate-sweep: sweep 2.8s linear infinite;
+  --animate-pop: pop 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 @keyframes pulse-ring {
   0%,
   100% {
-    opacity: 0.85;
+    opacity: 0.9;
     transform: scale(1);
   }
   50% {
-    opacity: 0.35;
-    transform: scale(1.35);
+    opacity: 0.25;
+    transform: scale(1.6);
   }
 }
 
@@ -161,11 +183,22 @@
 @keyframes rise {
   from {
     opacity: 0;
-    transform: translateY(6px);
+    transform: translateY(10px) scale(0.985);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
   }
 }
 
@@ -180,10 +213,21 @@
 
 @keyframes sweep {
   from {
-    transform: translateX(-100%);
+    transform: translateX(-120%);
   }
   to {
-    transform: translateX(400%);
+    transform: translateX(420%);
+  }
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 
@@ -201,23 +245,37 @@ body {
 }
 
 body {
-  background:
-    radial-gradient(circle at 78% -12%, rgb(95 225 255 / 7%), transparent 29rem),
-    radial-gradient(circle at 20% 110%, rgb(185 155 255 / 5%), transparent 26rem),
-    var(--bg);
+  background: var(--bg);
   color: var(--fg);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
   overscroll-behavior: none;
 }
 
-button,
-input {
-  font: inherit;
-}
-
-button {
-  -webkit-tap-highlight-color: transparent;
+/* A soft, layered backdrop that gives the whole app depth. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      60rem 40rem at 12% -10%,
+      var(--aurora-1),
+      transparent 60%
+    ),
+    radial-gradient(
+      50rem 36rem at 96% 8%,
+      var(--aurora-2),
+      transparent 62%
+    ),
+    radial-gradient(
+      44rem 32rem at 60% 110%,
+      var(--aurora-3),
+      transparent 60%
+    );
 }
 
 ::selection {
@@ -228,7 +286,7 @@ button {
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
-  border-radius: 4px;
+  border-radius: 5px;
 }
 
 /* Thin, unobtrusive scrollbars that match the surface they sit on. */
@@ -287,6 +345,12 @@ button {
   font-size: clamp(1.375rem, 1.24rem + 0.7vw, 1.875rem);
 }
 
+/* Headings get a tighter, more confident tracking. */
+@utility heading {
+  letter-spacing: -0.021em;
+  font-weight: 640;
+}
+
 /* A hairline that survives fractional device pixel ratios. */
 @utility hairline {
   border-width: 1px;
@@ -307,21 +371,59 @@ button {
 }
 
 /* -------------------------------------------------------------------------- */
-/* Component primitives                                                       */
+/* Surfaces                                                                    */
 /* -------------------------------------------------------------------------- */
 
 /* The frosted panel used by the rail, popovers and the composer. */
 @utility glass {
-  background: color-mix(in srgb, var(--surface) 82%, transparent);
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  background: color-mix(in srgb, var(--surface) 74%, transparent);
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
 }
 
+/* A card with a soft, coloured shadow instead of a flat grey one. */
 @utility card {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
+}
+
+/* The same card, lifted. */
+@utility card-lift {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  transition:
+    transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.22s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--border-strong);
+  }
+}
+
+/* A panel whose top edge catches the light. */
+@utility panel-sheen {
+  position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--accent) 40%, transparent),
+      transparent
+    );
+    pointer-events: none;
+  }
 }
 
 /* The repeating texture used behind the chain explorer. */
@@ -338,6 +440,7 @@ button {
       transparent 1px
     );
   background-size: 28px 28px;
+  background-position: center;
 }
 
 /* A moving highlight for the "live" pill. */
@@ -368,6 +471,37 @@ button {
   border-radius: 5px;
   background: var(--surface-inset);
   border: 1px solid var(--border);
+}
+
+/* A skeleton that shimmers while the interface waits for the node. */
+@utility skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--surface-3) 25%,
+    color-mix(in srgb, var(--surface-3) 60%, var(--surface)) 50%,
+    var(--surface-3) 75%
+  );
+  background-size: 200% 100%;
+  animation: var(--animate-shimmer);
+  border-radius: var(--radius-sm);
+}
+
+/* A message that arrives with a small, calm entrance. */
+@utility message-enter {
+  animation: var(--animate-rise);
+  animation-duration: 0.24s;
+  animation-fill-mode: both;
+}
+
+/* Buttons that press down a touch. */
+@utility pressable {
+  transition:
+    transform 0.14s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 0.14s ease;
+
+  &:active {
+    transform: scale(0.97);
+  }
 }
 
 /* Respect users who asked the operating system for less motion. */

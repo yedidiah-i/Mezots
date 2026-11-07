@@ -341,7 +341,7 @@ mod tests {
         for seq in 0..2 {
             let env = Envelope::next(
                 seq,
-                Frame::StreamChunk {
+                Frame::StreamChunk { room: "general".into(),
                     stream_id: 1,
                     seq,
                     payload: vec![0; 8],
@@ -353,7 +353,7 @@ mod tests {
         // The next one does not fit any more.
         let overflow = Envelope::next(
             99,
-            Frame::StreamChunk {
+            Frame::StreamChunk { room: "general".into(),
                 stream_id: 1,
                 seq: 99,
                 payload: vec![0; 8],
@@ -374,7 +374,7 @@ mod tests {
             sender
                 .try_send(Envelope::next(
                     seq,
-                    Frame::StreamChunk {
+                    Frame::StreamChunk { room: "general".into(),
                         stream_id: 1,
                         seq,
                         payload: vec![0; 8],
@@ -397,7 +397,7 @@ mod tests {
         sender
             .try_send(Envelope::next(
                 1,
-                Frame::StreamChunk {
+                Frame::StreamChunk { room: "general".into(),
                     stream_id: 1,
                     seq: 0,
                     payload: vec![0],
@@ -405,7 +405,7 @@ mod tests {
             ))
             .unwrap();
         sender
-            .try_send(Envelope::next(2, Frame::ChatText { text: "hi".into() }))
+            .try_send(Envelope::next(2, Frame::ChatText { room: "general".into(), text: "hi".into() }))
             .unwrap();
         sender
             .try_send(Envelope::next(3, Frame::Ping { nonce: 1, sent_ms: 0 }))

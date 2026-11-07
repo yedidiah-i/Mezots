@@ -9,9 +9,22 @@ use std::time::Duration;
 use futures_util::{SinkExt, StreamExt};
 use mezots::config::NodeConfig;
 use mezots::peer::PeerEvent;
+use mezots::reels::ReelStore;
 use mezots::transport::websocket::WebSocketServer;
 use mezots::PeerManager;
 use tokio_tungstenite::tungstenite::Message;
+
+/// A temporary directory for the clips a test publishes.
+fn temp_reels() -> ReelStore {
+    let dir = std::env::temp_dir().join(format!(
+        "mezots-test-reels-{}",
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map(|d| d.as_nanos())
+            .unwrap_or(0)
+    ));
+    ReelStore::open(dir).expect("the reels store should open")
+}
 
 /// A node with discovery switched off, listening on a free port.
 async fn start_node(node_id: &str) -> PeerManager {
@@ -42,6 +55,9 @@ where
 }
 
 /// Read the next JSON event from the socket.
+///
+/// The bridge greets every browser with the identity of the node, so the
+/// greeting is skipped when a test is looking for something else.
 async fn next_json(
     socket: &mut tokio_tungstenite::WebSocketStream<
         tokio_tungstenite::MaybeTlsStream<tokio::net::TcpStream>,
@@ -51,7 +67,13 @@ async fn next_json(
     while tokio::time::Instant::now() < deadline {
         let remaining = deadline.saturating_duration_since(tokio::time::Instant::now());
         match tokio::time::timeout(remaining, socket.next()).await {
-            Ok(Some(Ok(Message::Text(text)))) => return text.to_string(),
+            Ok(Some(Ok(Message::Text(text)))) => {
+                let payload = text.to_string();
+                if payload.contains("\"type\":\"identity\"") {
+                    continue;
+                }
+                return payload;
+            }
             Ok(Some(Ok(_))) => continue,
             Ok(Some(Err(e))) => panic!("websocket error: {e}"),
             Ok(None) => panic!("the websocket closed"),
@@ -68,6 +90,7 @@ async fn a_browser_can_list_the_peers() {
         7801,
         Arc::new(manager.clone()),
         manager.subscribe(),
+        temp_reels(),
     )
     .await
     .expect("websocket server failed to start");
@@ -114,6 +137,7 @@ async fn a_browser_message_reaches_the_peer() {
         7802,
         Arc::new(node_a.clone()),
         node_a.subscribe(),
+        temp_reels(),
     )
     .await
     .expect("websocket server failed to start");
@@ -136,7 +160,7 @@ async fn a_browser_message_reaches_the_peer() {
     while tokio::time::Instant::now() < deadline && !received {
         let remaining = deadline.saturating_duration_since(tokio::time::Instant::now());
         match tokio::time::timeout(remaining, events_b.recv()).await {
-            Ok(Ok(PeerEvent::Message { peer_id, text })) => {
+            Ok(Ok(PeerEvent::Message { peer_id, text, .. })) => {
                 assert_eq!(peer_id, "node-a");
                 received = text == "from the browser";
             }
@@ -156,6 +180,7 @@ async fn the_bridge_reports_an_unknown_peer() {
         7803,
         Arc::new(manager.clone()),
         manager.subscribe(),
+        temp_reels(),
     )
     .await
     .expect("websocket server failed to start");
@@ -178,4 +203,87 @@ async fn the_bridge_reports_an_unknown_peer() {
     );
 
     server.shutdown();
+}
+
+/// The browser contract is written down in `lib/protocol.ts`.
+///
+/// This test makes sure the names on the wire are the names the interface
+/// expects, so the two halves cannot drift apart silently.
+#[test]
+fn the_wire_names_match_the_browser_contract() {
+    use mezots::transport::websocket::{RoomMessage, WsEvent};
+
+    let event = WsEvent::RoomMessage {
+        message: RoomMessage {
+            room: "general".into(),
+            peer_id: "node-b".into(),
+            author: "Bravo".into(),
+            text: "hello".into(),
+            ts: 42,
+            client_msg_id: Some("c-1".into()),
+            block_hash: Some("abc".into()),
+            height: Some(7),
+            encrypted: Some(true),
+        },
+    };
+
+    let json = serde_json::to_string(&event).expect("the event should serialize");
+
+    for key in [
+        "\"type\":\"roomMessage\"",
+        "\"room\":\"general\"",
+        "\"peerId\":\"node-b\"",
+        "\"author\":\"Bravo\"",
+        "\"clientMsgId\":\"c-1\"",
+        "\"blockHash\":\"abc\"",
+        "\"height\":7",
+        "\"encrypted\":true",
+    ] {
+        assert!(
+            json.contains(key),
+            "the event is missing {key}, got: {json}"
+        );
+    }
+}
+
+/// The commands the browser sends are read with the same names.
+#[test]
+fn the_commands_use_the_browser_names() {
+    use mezots::transport::websocket::WsCommand;
+
+    let command: WsCommand = serde_json::from_str(
+        "{\"type\":\"sendRoomText\",\"room\":\"general\",\"text\":\"hi\",\"clientMsgId\":\"c-1\"}",
+    )
+    .expect("the command should parse");
+
+    match command {
+        WsCommand::SendRoomText {
+            room,
+            text,
+            client_msg_id,
+        } => {
+            assert_eq!(room, "general");
+            assert_eq!(text, "hi");
+            assert_eq!(client_msg_id.as_deref(), Some("c-1"));
+        }
+        other => panic!("the command was read as the wrong variant: {other:?}"),
+    }
+
+    let command: WsCommand = serde_json::from_str(
+        "{\"type\":\"streamChunk\",\"room\":\"stream:hall\",\"streamId\":3,\"payloadBase64\":\"AA==\"}",
+    )
+    .expect("the command should parse");
+
+    match command {
+        WsCommand::StreamChunk {
+            room,
+            stream_id,
+            payload_base64,
+        } => {
+            assert_eq!(room, "stream:hall");
+            assert_eq!(stream_id, 3);
+            assert_eq!(payload_base64, "AA==");
+        }
+        other => panic!("the command was read as the wrong variant: {other:?}"),
+    }
 }
